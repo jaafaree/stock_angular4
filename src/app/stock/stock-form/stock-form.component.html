@@ -4,21 +4,30 @@
   </div>
   <!-- /.box-header -->
   <!-- form start -->
-  <form class="form-horizontal">
+  <form [formGroup]="formModel" class="form-horizontal">
     <div class="box-body">
-      <div class="form-group">
+      <div class="form-group" [class.has-error]="formModel.get('name').touched && (formModel.hasError('minlength', 'name') || formModel.hasError('required', 'name'))">
         <label for="name" class="col-sm-2 control-label">Stock Name</label>
 
         <div class="col-sm-8">
-          <input type="text" class="form-control" id="name" placeholder="Stock Name" value="{{stock.name}}">
+          <input formControlName="name" type="text" class="form-control" id="name" placeholder="Stock Name">
         </div>
+        <span class="help-block" [class.hidden]="formModel.get('name').untouched || !formModel.hasError('minlength', 'name')">
+          min length is 3
+        </span>
+        <span class="help-block" [class.hidden]="formModel.get('name').untouched || !formModel.hasError('required', 'name')">
+          required a name
+        </span>
       </div>
-      <div class="form-group">
+      <div class="form-group" [class.has-error]="formModel.get('price').touched && formModel.hasError('required', 'price')">
         <label for="price" class="col-sm-2 control-label">Stock price</label>
 
         <div class="col-sm-6">
-          <input type="number" class="form-control" id="price" placeholder="Stock Price" value="{{stock.price}}">
+          <input formControlName="price" type="number" class="form-control" id="price" placeholder="Stock Price">
         </div>
+        <span class="help-block" [class.hidden]="formModel.get('price').untouched || !formModel.hasError('required', 'price')">
+          required a price
+        </span>
       </div>
       <div class="form-group">
         <label class="col-sm-2 control-label">Stock rating</label>
@@ -31,36 +40,29 @@
         <label class="col-sm-2 control-label">Stock Description</label>
 
         <div class="col-sm-8">
-          <textarea class="form-control" rows="5">{{stock.desc}}</textarea>
+          <textarea formControlName="desc" class="form-control" rows="5"></textarea>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group" [class.has-error]="formModel.get('categories').dirty && formModel.hasError('categoriesLength', 'categories')">
         <label class="col-sm-2 control-label">Stock Categories</label>
         <div class="col-sm-10">
-          <div class="row">
-            <div class="checkbox col-sm-1">
+          <div class="row" formArrayName="categories">
+            <div *ngFor="let category of categories; let i = index" class="checkbox col-sm-1">
               <label>
-                <input type="checkbox"> IT
-              </label>
-            </div>
-            <div class="checkbox col-sm-1">
-              <label>
-                <input type="checkbox"> Bank
-              </label>
-            </div>
-            <div class="checkbox col-sm-1">
-              <label>
-                <input type="checkbox"> Game
+                <input [formControlName]="i" type="checkbox"> {{category}}
               </label>
             </div>
           </div>
+          <span class="help-block" [class.hidden]="!formModel.get('categories').dirty || !formModel.hasError('categoriesLength', 'categories')">
+          required a item selected
+        </span>
         </div>
       </div>
     </div>
     <!-- /.box-body -->
     <div class="box-footer">
       <button type="submit" class="btn btn-default" (click)="cancel()">Cancel</button>
-      <button type="submit" class="btn btn-info pull-right" (click)="save()">Submit</button>
+      <button type="submit" [disabled]="formModel.invalid" class="btn btn-info pull-right" (click)="save()">Submit</button>
     </div>
     <!-- /.box-footer -->
   </form>

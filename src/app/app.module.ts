@@ -15,6 +15,7 @@ import { StockFormComponent } from './stock/stock-form/stock-form.component';
 import {StockService} from './stock/stock.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { StockFilterPipe } from './stock/stock-filter.pipe';
+import {HttpModule} from '@angular/http';
 
 const  routeConfig: Routes = [
   {
@@ -49,7 +50,8 @@ const  routeConfig: Routes = [
     BrowserModule,
     RouterModule.forRoot(routeConfig),
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    HttpModule
   ],
   providers: [StockService],
   bootstrap: [AppComponent]

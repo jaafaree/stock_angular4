@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Stock, StockService} from '../stock.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-stock-form',
@@ -9,7 +10,11 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class StockFormComponent implements OnInit {
 
-  stock: Stock;
+  formModel: FormGroup;
+
+  stock: Stock = new Stock(0, '', 0, 0, '', []);
+
+  categories: Array<string> = ['IT', 'Bank', 'Game'];
 
   constructor(private routeInfo: ActivatedRoute
     , private stockService: StockService
@@ -18,7 +23,51 @@ export class StockFormComponent implements OnInit {
 
   ngOnInit() {
     const stockId = this.routeInfo.snapshot.params['id'];
-    this.stock = this.stockService.getStock(stockId);
+
+    const fb = new FormBuilder();
+    this.formModel = fb.group(
+      {
+        name: ['', [Validators.required, Validators.minLength(3)]],
+        price: ['', [Validators.required]],
+        desc: [''],
+        categories: fb.array([
+          new FormControl(false),
+          new FormControl(false),
+          new FormControl(false)
+        ], this.categoriesSelectValidator)
+      }
+    );
+    this.stockService.getStock(stockId).subscribe(stock => {
+      this.stock = stock;
+      this.formModel.reset({
+        name: stock.name,
+        price: stock.price,
+        desc: stock.desc,
+        categories: [
+          stock.categories.indexOf(this.categories[0]) > -1,
+          stock.categories.indexOf(this.categories[1]) > -1,
+          stock.categories.indexOf(this.categories[2]) > -1
+        ]
+      });
+    });
+  }
+
+  categoriesSelectValidator(control: FormArray) {
+    let valid = false;
+    control.controls.forEach(control => {
+      if (control.value) {
+        valid = true;
+      }
+    });
+    if (valid) {
+      return null;
+    } else {
+      return {
+        categoriesLength: true
+      };
+    }
+
+    return;
   }
 
   cancel() {
@@ -26,8 +75,19 @@ export class StockFormComponent implements OnInit {
   }
 
   save() {
-    console.log(this.stock.rating);
-    this.router.navigateByUrl('/stock');
+    //console.log(this.stock.rating);
+    //this.router.navigateByUrl('/stock');
+
+    let chineseCategories = [];
+    let index = 0;
+    for (let i = 0; i < 3; i++) {
+      if (this.formModel.value.categories[i]) {
+        chineseCategories[index++] = this.categories[i];
+      }
+    }
+    this.formModel.value.categories = chineseCategories;
+    this.formModel.value.rating = this.stock.rating;
+    console.log(this.formModel.value);
   }
 
 }
