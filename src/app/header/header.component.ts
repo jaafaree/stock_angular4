@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {MessageCountService} from './message-count.service';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor() { }
+  messageCount = 0;
+
+  constructor(public messageCountService: MessageCountService) { }
 
   ngOnInit() {
+    this.messageCountService.createObservalbeSocket('ws://localhost:8085')
+      .pipe(map(event => JSON.parse(event)))
+      .subscribe(
+        event => this.messageCount = event.messageCount
+      );
   }
-
 }

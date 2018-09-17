@@ -16,6 +16,7 @@ import {StockService} from './stock/stock.service';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { StockFilterPipe } from './stock/stock-filter.pipe';
 import {HttpModule} from '@angular/http';
+import {MessageCountService} from './header/message-count.service';
 
 const  routeConfig: Routes = [
   {
@@ -53,7 +54,7 @@ const  routeConfig: Routes = [
     FormsModule,
     HttpModule
   ],
-  providers: [StockService],
+  providers: [StockService, MessageCountService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
